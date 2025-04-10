@@ -1,5 +1,6 @@
 import { cursorPrevActionCreator as cursorPrev } from '../../actions/cursorPrev'
 import { importTextActionCreator as importText } from '../../actions/importText'
+import { setCursorActionCreator } from '../../actions/setCursor'
 import { toggleAttributeActionCreator as toggleAttribute } from '../../actions/toggleAttribute'
 import { toggleContextViewActionCreator as toggleContextView } from '../../actions/toggleContextView'
 import globals from '../../globals'
@@ -131,6 +132,28 @@ describe('context view', () => {
 
     const stateNew = store.getState()
     expectPathToEqual(stateNew, stateNew.cursor, ['a', 'm', 'a'])
+  })
+
+  it('moves from note to cursor thought on cursorPrev', () => {
+    store.dispatch([
+      importText({
+        text: `
+            - a
+              - b
+                - =note
+                  - Hello world
+                - c
+          `,
+      }),
+      (dispatch, getState) =>
+        dispatch(setCursorActionCreator({ path: contextToPath(getState(), ['a', 'b']), noteFocus: true })),
+      cursorPrev(),
+    ])
+
+    const stateNew = store.getState()
+    console.log(stateNew)
+    expectPathToEqual(stateNew, stateNew.cursor, ['a', 'b'])
+    expect(stateNew.noteFocus).toBeFalse()
   })
 })
 
