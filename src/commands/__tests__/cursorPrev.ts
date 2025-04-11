@@ -151,7 +151,6 @@ describe('context view', () => {
     ])
 
     const stateNew = store.getState()
-    console.log(stateNew)
     expectPathToEqual(stateNew, stateNew.cursor, ['a', 'b'])
     expect(stateNew.noteFocus).toBeFalse()
   })
