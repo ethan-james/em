@@ -48,7 +48,7 @@ describe('splitSentences', () => {
   - **This is sentence three.**`)
   })
 
-  it('splits a thought with multiple sentences and font tags', () => {
+  it('splits a thought with a single sentence plus font tags', () => {
     store.dispatch([
       newThought({ value: '' }),
       setCursor(['']),
