@@ -372,7 +372,7 @@ export const set = (
 /**
  * Split given root node into two different ranges at the given selection.
  */
-function splitNode(root: HTMLElement, range: Range): { left: Range; right: Range } | null {
+export function splitNode(root: HTMLElement, range: Range): { left: Range; right: Range } | null {
   const { firstChild, lastChild } = root
 
   if (!firstChild || !lastChild) return null
