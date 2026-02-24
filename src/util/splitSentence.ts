@@ -106,13 +106,10 @@ const splitSentence = (value: string): SplitResult[] => {
       .map(value => ({ value }))
   }
 
-  const div = document.createElement('div')
-  div.innerHTML = value
-
   /**
    * When the setences can be split, it has multiple situations.
    */
-  const sentences = div.textContent.split(mainSplitRegex)
+  const sentences = value.split(mainSplitRegex)
 
   /**
    * The reduce function return a string, which is a combination of all the sentences, we then use __SEP__ to seperate each qualified sentence that can be split during the next step.
@@ -182,7 +179,10 @@ const splitSentence = (value: string): SplitResult[] => {
 
   let res: string[] = []
   let match = right.match(SEPARATOR_TOKEN)
-  debugger
+
+  const div = document.createElement('div')
+  div.innerHTML = right
+
   while (match) {
     const range = document.createRange()
     const index = div.textContent!.indexOf(match[0])
