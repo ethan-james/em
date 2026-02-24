@@ -36,7 +36,7 @@ describe('splitSentences', () => {
     store.dispatch([
       newThought({ value: '' }),
       setCursor(['']),
-      editThought([''], '**This is sentence one. This is sentence two. This is sentence three.**'),
+      editThought([''], '<b>This is sentence one. This is sentence two. This is sentence three.</b>'),
     ])
 
     executeCommand(splitSentencesCommand, { store })
@@ -52,23 +52,42 @@ describe('splitSentences', () => {
     store.dispatch([
       newThought({ value: '' }),
       setCursor(['']),
-      editThought(
-        [''],
-        `<ul>
+      editThought([''], `<font color="#000000" style="background-color: rgb(0, 214, 136);">font</font>`),
+    ])
+
+    executeCommand(splitSentencesCommand, { store })
+
+    const exported = exportContext(store.getState(), [HOME_TOKEN], 'text/html')
+    expect(exported).toBe(`<ul>
   <li>__ROOT__  
     <ul>
       <li><font color="#000000" style="background-color: rgb(0, 214, 136);">font</font></li>
     </ul>
   </li>
-</ul>`,
+</ul>`)
+  })
+
+  it('splits a thought with a multiple comma-delimited sentences plus font tags', () => {
+    store.dispatch([
+      newThought({ value: '' }),
+      setCursor(['']),
+      editThought(
+        [''],
+        `<font color="#000000" style="background-color: rgb(0, 214, 136);">comma one, comma two</font></li>`,
       ),
     ])
 
     executeCommand(splitSentencesCommand, { store })
 
-    const exported = exportContext(store.getState(), [HOME_TOKEN], 'text/plain')
-    expect(exported).toBe(`- __ROOT__
-  - <font color="#000000" style="background-color: rgb(0, 214, 136);">font</font>`)
+    const exported = exportContext(store.getState(), [HOME_TOKEN], 'text/html')
+    expect(exported).toBe(`<ul>
+  <li>__ROOT__  
+    <ul>
+      <li><font color="#000000" style="background-color: rgb(0, 214, 136);">comma one</font></li>
+      <li><font color="#000000" style="background-color: rgb(0, 214, 136);">comma two</font></li>
+    </ul>
+  </li>
+</ul>`)
   })
 
   it('does not split a thought with a single sentence', () => {

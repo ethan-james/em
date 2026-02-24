@@ -27,6 +27,17 @@ function calculateRemoveFront(str1: string, s: string, matched: string[]) {
 }
 
 /**
+ * Function: isStyle.
+ *
+ * @param str The previous sentence plus the previous splitter.
+ * @returns A boolean that says whether the semicolon is part of a CSS style block.
+ */
+function isStyle(str: string) {
+  const stylePattern = /style="[^"]+;$/
+  return stylePattern.test(str)
+}
+
+/**
  * Function: isUrl.
  *
  * @param str1 The previous sentence plus the previous splitter.
@@ -46,6 +57,27 @@ function isUrl(str1: string, s: string) {
   const combinedSentence = firstPart[len - 1] + s.split(' ')[0]
 
   return urlPattern.test(combinedSentence)
+}
+
+/**
+ * The reduce function return a string, which is a combination of all the sentences, we then use __SEP__ to seperate each qualified sentence that can be split during the next step.
+ */
+const SEPARATOR_TOKEN = '__SEP__'
+
+/**
+ * Inserts separators in place of commas, unless the comma is part of a style within a font tag (#3455).
+.
+ */
+function separateByComma(str: string) {
+  const EMBEDDED_COMMA_TOKEN = '__COMMA__'
+  const styleRegex = /style="[^"]+$/
+
+  return str
+    .split(',')
+    .reduce((str, s) => {
+      return str + s + (styleRegex.test(str + s) ? EMBEDDED_COMMA_TOKEN : SEPARATOR_TOKEN)
+    }, '')
+    .replaceAll(EMBEDDED_COMMA_TOKEN, ',')
 }
 
 interface SplitResult {
@@ -110,11 +142,6 @@ const splitSentence = (value: string): SplitResult[] => {
    * When the setences can be split, it has multiple situations.
    */
   const sentences = value.split(mainSplitRegex)
-
-  /**
-   * The reduce function return a string, which is a combination of all the sentences, we then use __SEP__ to seperate each qualified sentence that can be split during the next step.
-   */
-  const SEPARATOR_TOKEN = '__SEP__'
   const initialValue = sentences[0]
 
   const resultSentences = sentences.reduce((newSentence: string, s: string, i: number) => {
@@ -129,7 +156,7 @@ const splitSentence = (value: string): SplitResult[] => {
      * Case1: ending with url address
      * Case2: ending with Mr., Dr., Apt., i.e., Ph.D..
      */
-    if (isAbbreviation(prevSentence, s) || isUrl(prevSentence, s)) {
+    if (isAbbreviation(prevSentence, s) || isUrl(prevSentence, s) || isStyle(prevSentence)) {
       return newSentence + currSentence
     }
 
@@ -166,8 +193,7 @@ const splitSentence = (value: string): SplitResult[] => {
 
   let right =
     !resultSentences.match(SEPARATOR_TOKEN) && hasOnlyPeriodSplitterAtEnd
-      ? resultSentences
-          .replace(/,/g, `${SEPARATOR_TOKEN}`)
+      ? separateByComma(resultSentences)
           .split(SEPARATOR_TOKEN)
           .filter(s => /\S+/.test(s))
           .map(s => s.trim())
