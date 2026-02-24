@@ -187,7 +187,6 @@ const splitSentence = (value: string): SplitResult[] => {
   }, initialValue)
 
   // if the return string is one sentence that ends with no other main split characters except one period at the end, split the thought by comma
-  // const res = resultSentences.split(SEPARATOR_TOKEN).filter(s => /\S+/.test(s))
   const hasOnlyPeriodSplitterAtEnd = !/;!?$/.test(resultSentences)
 
   let right =
@@ -208,6 +207,7 @@ const splitSentence = (value: string): SplitResult[] => {
   const div = document.createElement('div')
   div.innerHTML = right
 
+  // Find the separator token within the div's text content, then traverse to find the correct offset within the DOM fragment. (#3615)
   while (match) {
     const range = document.createRange()
     const index = div.textContent!.indexOf(match[0])
@@ -221,6 +221,7 @@ const splitSentence = (value: string): SplitResult[] => {
     range.setEnd(nodeOffset.node, nodeOffset.offset + match[0].length)
 
     const splitNodesResult = selection.splitNode(div, range)
+
     if (!splitNodesResult) break
 
     const leftDiv = document.createElement('div')
@@ -229,8 +230,11 @@ const splitSentence = (value: string): SplitResult[] => {
     leftDiv.appendChild(splitNodesResult.left.cloneContents())
     rightDiv.appendChild(splitNodesResult.right.cloneContents())
 
+    // Add the next sentence, with properly-formatted HTML tags, to the results
     res = [...res, leftDiv.innerHTML]
     right = rightDiv.innerHTML
+
+    // Move on to the next match
     match = right.match(SEPARATOR_TOKEN)
     div.innerHTML = right
   }
