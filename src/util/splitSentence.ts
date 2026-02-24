@@ -66,7 +66,6 @@ const SEPARATOR_TOKEN = '__SEP__'
 
 /**
  * Inserts separators in place of commas, unless the comma is part of a style within a font tag (#3455).
-.
  */
 function separateByComma(str: string) {
   const EMBEDDED_COMMA_TOKEN = '__COMMA__'
