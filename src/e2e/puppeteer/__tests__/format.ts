@@ -4,7 +4,7 @@ import paste from '../helpers/paste'
 import waitForEditable from '../helpers/waitForEditable'
 import { page } from '../setup'
 
-vi.setConfig({ testTimeout: 60000, hookTimeout: 60000 })
+vi.setConfig({ testTimeout: 20000, hookTimeout: 60000 })
 
 it('Apply formatting to a selected portion of a thought', async () => {
   const importText = `
