@@ -33,6 +33,10 @@ updates:
           - 'jest-environment-*'
           - '@types/jest'
           - '@types/jest-*'
+      lodash:
+        patterns:
+          - 'lodash'
+          - '@types/lodash'
       mui-emotion:
         patterns:
           - '@mui/*'
