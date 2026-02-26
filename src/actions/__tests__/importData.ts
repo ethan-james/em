@@ -1109,6 +1109,60 @@ p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Helvetica; color: #000000}
   - a*foo*`)
 })
 
+it('paste em text with browser-injected meta charset as inline, not subthought', async () => {
+  vi.useFakeTimers()
+  const { cleanup } = await initialize()
+
+  store.dispatch([
+    newThought({ value: 'a' }),
+    (dispatch, getState) =>
+      dispatch(
+        importDataActionCreator({
+          path: contextToPath(getState(), ['a'])!,
+          html: `<meta charset='utf-8'>Hello`,
+          text: 'Hello',
+          isEmText: true,
+        }),
+      ),
+  ])
+
+  await vi.runOnlyPendingTimersAsync()
+
+  const exported = exportContext(store.getState(), HOME_PATH, 'text/plain')
+
+  cleanup()
+
+  expect(exported).toBe(`- ${HOME_TOKEN}
+  - aHello`)
+})
+
+it('paste em text with formatted html and meta charset as inline', async () => {
+  vi.useFakeTimers()
+  const { cleanup } = await initialize()
+
+  store.dispatch([
+    newThought({ value: 'a' }),
+    (dispatch, getState) =>
+      dispatch(
+        importDataActionCreator({
+          path: contextToPath(getState(), ['a'])!,
+          html: `<meta charset='utf-8'><b>Hello</b>`,
+          text: 'Hello',
+          isEmText: true,
+        }),
+      ),
+  ])
+
+  await vi.runOnlyPendingTimersAsync()
+
+  const exported = exportContext(store.getState(), HOME_PATH, 'text/html')
+
+  cleanup()
+
+  expect(exported).toContain('<b>Hello</b>')
+  expect(exported).not.toContain('<meta')
+})
+
 it('insert single-line HTML copied from Windows desktop Chrome at end of thought', async () => {
   const html = `<html>
 <body>
