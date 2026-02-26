@@ -32,7 +32,7 @@ describe('splitSentences', () => {
   - This is sentence three.`)
   })
 
-  it('splits a thought with multiple sentences and styles', () => {
+  it('splits a thought with multiple sentences all wrapped in a single bold tag', () => {
     store.dispatch([
       newThought({ value: '' }),
       setCursor(['']),
@@ -48,7 +48,7 @@ describe('splitSentences', () => {
   - **This is sentence three.**`)
   })
 
-  it('splits a thought with a single sentence plus font tags', () => {
+  it('does not split a thought with a single sentence and a font tag', () => {
     store.dispatch([
       newThought({ value: '' }),
       setCursor(['']),
@@ -67,7 +67,7 @@ describe('splitSentences', () => {
 </ul>`)
   })
 
-  it('splits a thought with a multiple comma-delimited sentences plus font tags', () => {
+  it('splits a thought with a multiple comma-delimited sentences plus a font tag', () => {
     store.dispatch([
       newThought({ value: '' }),
       setCursor(['']),
