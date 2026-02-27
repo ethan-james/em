@@ -16,6 +16,8 @@ import { isNavigation, isUndoable } from '../util/actionMetadata.registry'
 import headValue from '../util/headValue'
 import reducerFlow from '../util/reducerFlow'
 
+/** Track a stream of editThought actions so that they can be merged,
+ * allowing edits to be treated as a single undo/redo step when they involve adding new characters or else removing old characters. */
 enum EditThoughtDirection {
   None = 'None',
   Longer = 'Longer',
@@ -293,8 +295,6 @@ const undoRedoReducerEnhancer: StoreEnhancer<any> =
       }
 
       lastAction = action
-      // isEditAddition will be false if the previous action was not editThought, but this will cause the next editThought action
-      // to fail to merge in the case where this is the first editThought action in a potential chain of them (#3673)
       lastEditThoughtDirection = editThoughtDirection
 
       // add a new undo patch
